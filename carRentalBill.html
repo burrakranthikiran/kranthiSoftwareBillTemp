@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KK Bro's Travels - Invoice</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 25mm;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f8f9fa;
+      color: #212529;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 5px;
+      font-size: 24px;
+    }
+
+    .contact {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .contact p {
+      margin: 4px;
+    }
+
+    .meta-info {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+
+    .meta-info p input {
+      border: none;
+      background-color: #e9ecef;
+      font-weight: bold;
+      width: 200px;
+      padding: 6px 8px;
+      border-radius: 4px;
+    }
+
+    .to-address textarea {
+      width: 100%;
+      border: 1px solid #ced4da;
+      padding: 8px;
+      font-size: 14px;
+      margin-top: 5px;
+      border-radius: 4px;
+      resize: vertical;
+    }
+
+    .editable-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: #fff;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+      page-break-inside: auto;
+    }
+
+    .editable-table th, .editable-table td {
+      border: 1px solid #dee2e6;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .editable-table th {
+      background-color: #f1f3f5;
+    }
+
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      border: none;
+      background-color: transparent;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .buttons {
+      margin: 15px 0;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background-color: #0d6efd;
+      color: white;
+      padding: 8px 16px;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn:hover {
+      background-color: #0b5ed7;
+      transform: translateY(-2px);
+    }
+
+    .total-amount-row {
+      font-weight: bold;
+      background-color: #e2f0d9;
+    }
+
+    #grandTotalText, #extraTotalText, #invoiceTotalText {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .bottom-section {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+    }
+
+    .terms {
+      width: 50%;
+    }
+
+    .terms ul {
+      text-align: left;
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .signature-block {
+      width: 40%;
+      text-align: right;
+    }
+
+    tr.fade-in {
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .hide-on-empty {
+      display: none;
+    }
+
+    @media print {
+      .btn, .action-col, .action-cell {
+        display: none !important;
+      }
+
+      body {
+        background: #fff;
+        padding: 0;
+      }
+
+      .hide-on-empty {
+        display: none !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .meta-info {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .buttons {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .editable-table {
+        font-size: 12px;
+        overflow-x: auto;
+        display: block;
+      }
+
+      .bottom-section {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .terms, .signature-block {
+        width: 100%;
+        text-align: left;
+      }
+    }
+
+    /* Loading Spinner */
+    #loader-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .loader {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #0d6efd;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    body.loaded #loader-wrapper {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loader -->
+<div id="loader-wrapper">
+  <div class="loader"></div>
+</div>
+
+<div class="buttons">
+  <button class="btn" onclick="window.print()">🖨 Print</button>
+  <button class="btn" onclick="addRow()">+ Add Travel Row</button>
+  <button class="btn" onclick="addExtraRow()">+ Add Extra Charge</button>
+  <button class="btn" onclick="toggleChargeTable()">👁 Show/Hide Charge Table</button>
+</div>
+
+<h2>KK Bro's Travels</h2>
+<div class="contact">
+  <p>🚌 Door No: 9-1-55, Employee Colony</p>
+  <p>📍 Jammikuntha, Karimnagar</p>
+  <p>📞 Phone: +91-7702597518</p>
+</div>
+
+<div class="meta-info">
+  <p>Date: <input type="text" id="date" readonly></p>
+  <p>Ref No: <input type="text" id="refNo" readonly></p>
+</div>
+
+<div class="to-address">
+  <p>To:</p>
+  <textarea rows="2" placeholder="Enter address here..."></textarea>
+</div>
+
+<p>Dear Sir/Madam,</p>
+<p>We are pleased to offer you our travel services. Please find the details below:</p>
+
+<!-- Travel Table -->
+<table class="editable-table" id="travelTable">
+  <thead>
+    <tr>
+      <th>Vehicle Number</th>
+      <th>No. of Persons</th>
+      <th>From - To</th>
+      <th>Total KMs</th>
+      <th>Rate per KM</th>
+      <th>Total Amount</th>
+      <th class="action-col">Action</th>
+    </tr>
+  </thead>
+  <tbody id="tableBody">
+    <tr>
+      <td><input type="text"></td>
+      <td><input type="number"></td>
+      <td><input type="text"></td>
+      <td><input type="number" class="kms"></td>
+      <td><input type="number" class="rate"></td>
+      <td><input type="number" class="amount" readonly></td>
+      <td class="action-cell"><button class="btn" onclick="removeRow(this)">Remove</button></td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr class="total-amount-row">
+      <td colspan="5">Grand Total</td>
+      <td colspan="2" id="grandTotalText">₹ 0.00</td>
+    </tr>
+  </tfoot>
+</table>
+
+<!-- Additional Charges -->
+<div id="extraSection">
+  <h4 style="margin-top: 40px;">Additional Charges</h4>
+  <table class="editable-table" id="extraTable" style="width: 100%;">
+    <thead>
+      <tr>
+        <th>Charge Type</th>
+        <th>Description</th>
+        <th>Amount (₹)</th>
+        <th>Remarks</th>
+        <th class="action-col">Action</th>
+      </tr>
+    </thead>
+    <tbody id="extraBody">
+      <tr>
+        <td>
+          <select>
+            <option value="Driver Bata">Driver Bata</option>
+            <option value="Toll">Toll</option>
+            <option value="Parking">Parking</option>
+            <option value="Taxes">Taxes</option>
+          </select>
+        </td>
+        <td><input type="text"></td>
+        <td><input type="number" class="extra-amount"></td>
+        <td><input type="text"></td>
+        <td class="action-cell"><button class="btn" onclick="removeRow(this)">Remove</button></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr class="total-amount-row">
+        <td colspan="2">Total Additional Charges</td>
+        <td colspan="2" id="extraTotalText">₹ 0.00</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<!-- Invoice Total -->
+<table class="editable-table" style="width: 230px; float: right;">
+  <tr class="total-amount-row">
+    <td>Total Invoice Amount</td>
+    <td id="invoiceTotalText">₹ 0.00</td>
+  </tr>
+</table>
+
+<div style="clear: both;"></div>
+
+<!-- Footer -->
+<div class="bottom-section">
+  <div class="terms">
+    <h4>Terms & Conditions</h4>
+    <ul>
+      <li>Advance payment required for booking confirmation.</li>
+      <li>Cancellation charges may apply as per policy.</li>
+      <li>Driver contact will be shared prior to the trip.</li>
+    </ul>
+  </div>
+
+  <div class="signature-block">
+    <p><strong>System Generated</strong></p>
+    <p>No signature required.</p>
+  </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+  window.addEventListener("load", () => {
+    document.body.classList.add("loaded");
+  });
+
+  const today = new Date();
+  document.getElementById("date").value = today.toLocaleDateString("en-IN");
+  document.getElementById("refNo").value = today.toISOString().replace(/[-:.TZ]/g, "").slice(0, 14);
+
+  function toggleChargeTable() {
+    document.getElementById("extraSection").classList.toggle("hide-on-empty");
+  }
+
+  function calculateAmounts() {
+    let grandTotal = 0;
+    document.querySelectorAll("#tableBody tr").forEach(row => {
+      const kms = parseFloat(row.querySelector(".kms")?.value) || 0;
+      const rate = parseFloat(row.querySelector(".rate")?.value) || 0;
+      const amount = row.querySelector(".amount");
+      const total = kms * rate;
+      amount.value = total.toFixed(2);
+      grandTotal += total;
+    });
+    document.getElementById("grandTotalText").textContent = `₹ ${grandTotal.toFixed(2)}`;
+  }
+
+  function calculateExtraTotal() {
+    let total = 0;
+    document.querySelectorAll("#extraBody .extra-amount").forEach(el => {
+      total += parseFloat(el.value) || 0;
+    });
+    document.getElementById("extraTotalText").textContent = `₹ ${total.toFixed(2)}`;
+  }
+
+  function calculateInvoiceTotal() {
+    const g = parseFloat(document.getElementById("grandTotalText").textContent.replace(/[₹, ]/g, '')) || 0;
+    const e = parseFloat(document.getElementById("extraTotalText").textContent.replace(/[₹, ]/g, '')) || 0;
+    document.getElementById("invoiceTotalText").textContent = `₹ ${(g + e).toFixed(2)}`;
+  }
+
+  function updateAllTotals() {
+    calculateAmounts();
+    calculateExtraTotal();
+    setTimeout(() => {
+      calculateInvoiceTotal();
+    }, 50);
+  }
+
+  document.getElementById("tableBody").addEventListener("input", updateAllTotals);
+  document.getElementById("extraBody").addEventListener("input", updateAllTotals);
+
+  function addRow() {
+    const row = document.createElement("tr");
+    row.classList.add("fade-in");
+    row.innerHTML = `
+      <td><input type="text"></td>
+      <td><input type="number"></td>
+      <td><input type="text"></td>
+      <td><input type="number" class="kms"></td>
+      <td><input type="number" class="rate"></td>
+      <td><input type="number" class="amount" readonly></td>
+      <td class="action-cell"><button class="btn" onclick="removeRow(this)">Remove</button></td>
+    `;
+    document.getElementById("tableBody").appendChild(row);
+  }
+
+  function addExtraRow() {
+    const row = document.createElement("tr");
+    row.classList.add("fade-in");
+    row.innerHTML = `
+      <td>
+        <select>
+          <option value="Driver Bata">Driver Bata</option>
+          <option value="Toll">Toll</option>
+          <option value="Parking">Parking</option>
+          <option value="Taxes">Taxes</option>
+        </select>
+      </td>
+      <td><input type="text"></td>
+      <td><input type="number" class="extra-amount"></td>
+      <td class="action-cell"><button class="btn" onclick="removeRow(this)">Remove</button></td>
+    `;
+    document.getElementById("extraBody").appendChild(row);
+  }
+
+  function removeRow(button) {
+    const row = button.closest("tr");
+    row.remove();
+    setTimeout(updateAllTotals, 10);
+  }
+
+  updateAllTotals();
+</script>
+
+</body>
+</html>
