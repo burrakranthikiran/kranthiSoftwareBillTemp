@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KK Bro's Travels - Invoice</title>
+  <title>Kranthi Software Billing</title>
   <style>
     @page {
       size: A4;
@@ -243,7 +243,7 @@
 
 <div class="buttons">
   <button class="btn" onclick="window.print()">🖨 Print</button>
-  <button class="btn" onclick="addRow()">+ Add Travel Row</button>
+  <button class="btn" onclick="addRow()">+ Add Row</button>
   <button class="btn" onclick="addExtraRow()">+ Add Extra Charge</button>
   <button class="btn" onclick="toggleChargeTable()">👁 Show/Hide Charge Table</button>
 </div>
@@ -283,7 +283,7 @@
   <tbody id="tableBody">
     <tr>
       <td><input type="text"></td>
-      <td><input type="text"></td>
+      <td> <textarea rows="2" placeholder="Enter address here..."></textarea></td>
       <td><input type="number" class="kms"></td>
       <td><input type="number" class="rate"></td>
       <td><input type="number" class="amount" readonly></td>
@@ -320,7 +320,7 @@
            
           </select>
         </td>
-        <td><input type="text"></td>
+        <td><textarea rows="2" placeholder="Enter address here..."></textarea></td>
         <td><input type="number" class="extra-amount"></td>
         <td><input type="text"></td>
         <td class="action-cell"><button class="btn" onclick="removeRow(this)">Remove</button></td>
@@ -349,9 +349,9 @@
 <div class="bottom-section">
   <div class="terms">
     <h4>Terms & Conditions</h4>
-    <ul>
-        <li>Once the bill is generated, payment must be made to Kranthi Software Solutions within a 1-day grace period.</li>
-    </ul>
+    <textarea id="termsText" rows="4" style="width:100%; border:1px solid #ced4da; border-radius:4px; padding:8px;">
+Once the bill is generated, payment must be made to Kranthi Software Solutions within a 1-day grace period.
+    </textarea>
   </div>
 
   <div class="signature-block">
