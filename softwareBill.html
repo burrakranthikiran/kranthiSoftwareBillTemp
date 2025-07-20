@@ -283,7 +283,7 @@
   <tbody id="tableBody">
     <tr>
       <td><input type="text"></td>
-      <td> <textarea rows="2" placeholder="Enter address here..."></textarea></td>
+      <td> <textarea rows="4" placeholder="Enter address here..."></textarea></td>
       <td><input type="number" class="kms"></td>
       <td><input type="number" class="rate"></td>
       <td><input type="number" class="amount" readonly></td>
@@ -320,7 +320,7 @@
            
           </select>
         </td>
-        <td><textarea rows="2" placeholder="Enter address here..."></textarea></td>
+        <td> <textarea rows="4" placeholder="Enter address here..."></textarea></td>
         <td><input type="number" class="extra-amount"></td>
         <td><input type="text"></td>
         <td class="action-cell"><button class="btn" onclick="removeRow(this)">Remove</button></td>
@@ -417,7 +417,7 @@ Once the bill is generated, payment must be made to Kranthi Software Solutions w
     row.classList.add("fade-in");
     row.innerHTML = `
       <td><input type="text"></td>
-      <td><input type="text"></td>
+      <td> <textarea rows="4" placeholder="Enter address here..."></textarea></td>
       <td><input type="number" class="kms"></td>
       <td><input type="number" class="rate"></td>
       <td><input type="number" class="amount" readonly></td>
@@ -438,7 +438,7 @@ Once the bill is generated, payment must be made to Kranthi Software Solutions w
           <option value="Taxes">Taxes</option>
         </select>
       </td>
-      <td><input type="text"></td>
+     <td> <textarea rows="4" placeholder="Enter address here..."></textarea></td>
       <td><input type="number" class="extra-amount"></td>
       <td class="action-cell"><button class="btn" onclick="removeRow(this)">Remove</button></td>
     `;
